@@ -3,5 +3,29 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gray-950 text-gray-100 font-sans;
+	/* Fondo principal oscuro y color de texto base */
+	@apply bg-gray-950 text-gray-200 font-sans;
+
+	/* Efecto de resplandor azul desde el centro */
+	background-image: radial-gradient(
+		circle at 50% 50%,
+		rgba(37, 99, 235, 0.1),
+		/* Azul primario (blue-600) con opacidad */ #030712 60% /* bg-gray-950 */
+	);
+	background-attachment: fixed;
+}
+
+/* Scrollbar sutil */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+::-webkit-scrollbar-track {
+	@apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+	@apply bg-gray-700 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+	@apply bg-gray-600;
 }

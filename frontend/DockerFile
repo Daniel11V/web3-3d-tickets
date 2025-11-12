@@ -1,11 +1,12 @@
-FROM node:20-alpine
+FROM node:20.18.0-alpine
 
 WORKDIR /app
 
+# 1. Copia solo los archivos de dependencias
 COPY package.json package-lock.json* ./
+
+# 2. Instala las dependencias (esto se cacheará)
 RUN npm install
 
-COPY . .
-
-ENV NODE_ENV=development
+# 3. Define el comando (no se necesita COPY . .)
 CMD ["npm", "run", "dev"]
