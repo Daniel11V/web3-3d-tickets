@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "./globals.css";
 import { ReactNode } from "react";
 import { ApolloWrapper } from "@/lib/apolloClient";
 import { Providers } from "@/lib/web3";
@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html lang="es" className="dark">
-			<body className="min-h-screen bg-gray-950 text-gray-200 flex flex-col items-center">
+			<body className="font-sans min-h-screen bg-slate-950 text-gray-200 flex flex-col items-center">
 				{/* Header pulido */}
 				<header className="w-full max-w-6xl py-4 px-6 flex justify-between items-center">
 					{/* Título nuevo */}
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				</header>
 
 				{/* Contenido principal centrado */}
-				<main className="flex-1 w-full max-w-6xl p-6 flex flex-col items-center">
+				<main className="flex-1 w-full max-w-6xl flex flex-col items-center">
 					<Providers>
 						<ApolloWrapper>{children}</ApolloWrapper>
 					</Providers>
