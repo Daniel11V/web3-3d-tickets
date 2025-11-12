@@ -1,0 +1,14 @@
+{
+  "name": "web3-3d-tickets",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack local environment for Web3 3D Tickets app (Next.js + GraphQL + MongoDB).",
+  "scripts": {
+    "dev": "docker-compose up --build",
+    "start": "docker-compose up",
+    "stop": "docker-compose down",
+    "clean": "docker-compose down -v && docker system prune -f"
+  },
+  "author": "Daniel",
+  "license": "MIT"
+}
