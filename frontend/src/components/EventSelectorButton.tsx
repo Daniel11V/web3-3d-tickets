@@ -5,6 +5,7 @@ type EventSelectorButtonProps = {
 	event: TEvent;
 	isSelected: boolean;
 	onClick: () => void;
+	disabled?: boolean; // 1. Añadimos la prop (opcional)
 };
 
 // --- Componente: Botón Selector de Evento ---
@@ -13,6 +14,7 @@ export const EventSelectorButton = ({
 	event,
 	isSelected,
 	onClick,
+	disabled, // 2. Obtenemos la prop
 }: EventSelectorButtonProps) => {
 	// Clases base para el botón
 	const baseClasses =
@@ -26,12 +28,16 @@ export const EventSelectorButton = ({
 	const unselectedClasses =
 		"bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-blue-600";
 
+	// 3. Clases para el estado deshabilitado
+	const disabledClasses = "opacity-50 cursor-not-allowed";
+
 	return (
 		<button
 			className={`${baseClasses} ${
 				isSelected ? selectedClasses : unselectedClasses
-			}`}
+			} ${disabled ? disabledClasses : ""}`} // 4. Aplicamos las clases de disabled
 			onClick={onClick}
+			disabled={disabled} // 5. Aplicamos el atributo nativo
 		>
 			{event.name}
 		</button>

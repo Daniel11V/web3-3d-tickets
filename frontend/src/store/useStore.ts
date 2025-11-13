@@ -1,22 +1,32 @@
 import { create } from "zustand";
 
-interface Event {
-  id: string;
-  code: string;
-  name: string;
-  imageUrl: string;
-}
+// Definimos el tipo para el estado de la wallet
+type TWalletState = {
+	isConnected: boolean;
+	userAddress: `0x${string}` | null;
+	setUserState: (state: {
+		isConnected: boolean;
+		userAddress: `0x${string}` | null;
+	}) => void;
+};
 
-interface EventStore {
-  events: Event[];
-  selectedEvent: Event | null;
-  setEvents: (events: Event[]) => void;
-  selectEvent: (event: Event) => void;
-}
+// Combinamos con el estado de eventos (si lo sigues usando)
+type TGlobalState = TWalletState & {
+	// selectedEventId: string | null;
+	// setSelectedEventId: (id: string) => void;
+};
 
-export const useEventStore = create<EventStore>((set) => ({
-  events: [],
-  selectedEvent: null,
-  setEvents: (events) => set({ events }),
-  selectEvent: (event) => set({ selectedEvent: event }),
+export const useStore = create<TGlobalState>((set) => ({
+	// Estado inicial de la wallet
+	isConnected: false,
+	userAddress: null,
+	setUserState: (state) =>
+		set({
+			isConnected: state.isConnected,
+			userAddress: state.userAddress,
+		}),
+
+	// Estado de eventos
+	// selectedEventId: null,
+	// setSelectedEventId: (id) => set({ selectedEventId: id }),
 }));

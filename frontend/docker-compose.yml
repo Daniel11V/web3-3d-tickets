@@ -1,0 +1,11 @@
+services:
+  frontend:
+    container_name: web3tickets_frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
+      - NEXT_PUBLIC_LOCAL_CHAIN_ID=31337

@@ -1,48 +1,59 @@
-// frontend/src/components/WalletConnect.tsx
 "use client";
 
 import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { injected } from "wagmi/connectors"; // Para MetaMask y otros injected wallets
+import { useEffect } from "react";
+import { useStore } from "@/store/useStore";
+import Link from "next/link";
 
-export default function WalletConnect() {
-	const { address, isConnected } = useAccount();
-	const { connect } = useConnect();
+export const WalletConnect = () => {
+	const account = useAccount();
+	const { connect, connectors } = useConnect();
 	const { disconnect } = useDisconnect();
 
-	const handleConnect = async () => {
-		try {
-			// Conecta usando el conector "injected"
-			connect({ connector: injected() });
-		} catch (err) {
-			console.error("Wallet connection failed:", err);
-			alert(
-				"Fallo al conectar la wallet. Asegúrate de tener MetaMask instalado."
-			);
-		}
-	};
+	const { setUserState, isConnected, userAddress } = useStore();
 
-	if (isConnected && address) {
+	// Sincroniza el estado de Wagmi con nuestro store global (Zustand)
+	useEffect(() => {
+		if (account.status === "connected") {
+			setUserState({
+				isConnected: true,
+				userAddress: account.address,
+			});
+		} else if (account.status === "disconnected") {
+			setUserState({
+				isConnected: false,
+				userAddress: null,
+			});
+		}
+	}, [account.status, account.address, setUserState]);
+
+	// Estado Conectado: Muestra botón de Perfil
+	if (isConnected && userAddress) {
 		return (
-			<div className="flex items-center gap-2">
-				<div className="text-green-400 font-medium">
-					✅ Conectado: {address.slice(0, 6)}...{address.slice(-4)}
-				</div>
-				<button
-					onClick={() => disconnect()}
-					className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm"
+			<div className="flex items-center gap-4">
+				<span className="hidden sm:block text-sm text-gray-400 font-mono">
+					{/* Muestra la dirección acortada */}
+					{`${userAddress.substring(0, 6)}...${userAddress.substring(
+						userAddress.length - 4
+					)}`}
+				</span>
+				<Link
+					href={{ pathname: "/profile" }}
+					className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
 				>
-					Desconectar
-				</button>
+					Profile
+				</Link>
 			</div>
 		);
 	}
 
+	// Estado Desconectado: Muestra botón de Conectar
 	return (
 		<button
-			onClick={handleConnect}
-			className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+			onClick={() => connect({ connector: connectors[0] })}
+			className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
 		>
 			Connect Wallet
 		</button>
 	);
-}
+};

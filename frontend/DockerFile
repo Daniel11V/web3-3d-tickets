@@ -8,5 +8,8 @@ COPY package.json package-lock.json* ./
 # 2. Instala las dependencias (esto se cacheará)
 RUN npm install
 
-# 3. Define el comando (no se necesita COPY . .)
+# 3. COPIA EL CÓDIGO FUENTE
+COPY . .
+
+# 4. Define el comando
 CMD ["npm", "run", "dev"]

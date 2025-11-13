@@ -6,8 +6,10 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # 2. Instala las dependencias
-# Esto SÍ se cachea y solo se re-ejecuta si package.json cambia
 RUN npm install
 
-# 3. Define el comando (el COPY . . se elimina)
+# 3. Copia el código fuente
+COPY . .
+
+# 4. Define el comando
 CMD ["npm", "run", "dev"]

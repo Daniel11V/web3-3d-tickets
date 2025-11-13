@@ -1,14 +1,16 @@
 {
-  "name": "web3-3d-tickets",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Full-stack local environment for Web3 3D Tickets app (Next.js + GraphQL + MongoDB).",
-  "scripts": {
-    "dev": "docker-compose up --build",
-    "start": "docker-compose up",
-    "stop": "docker-compose down",
-    "clean": "docker-compose down -v && docker system prune -f"
-  },
-  "author": "Daniel",
-  "license": "MIT"
+	"name": "web3-3d-tickets",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Full-stack local environment for Web3 3D Tickets app (Next.js + GraphQL + MongoDB).",
+	"scripts": {
+		"start": "docker-compose up --build -d",
+		"stop": "docker-compose down",
+		"clean": "docker-compose down -v && docker system prune -f",
+		"rebuild:front": "docker-compose -p web3tickets up --build -d frontend",
+		"rebuild:back": "docker-compose -p web3tickets up --build -d backend",
+		"rebuild:blockchain": "docker-compose -p web3tickets up --build -d blockchain"
+	},
+	"author": "Daniel Vinet",
+	"license": "MIT"
 }

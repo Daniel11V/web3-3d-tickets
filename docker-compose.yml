@@ -1,41 +1,39 @@
 services:
   db:
-    image: mongo:6
+    image: mongo
     container_name: web3tickets_db
-    restart: always
-    environment:
-      MONGO_INITDB_DATABASE: web3tickets
     ports:
       - "27017:27017"
     volumes:
-      - ./backend/db_data:/data/db # Ruta de volumen de Mongo
+      - mongodb_data:/data/db
 
   backend:
     build: ./backend
     container_name: web3tickets_backend
-    restart: always
-    env_file:
-      - ./backend/.env # Asegúrate que este archivo tenga el MONGODB_URI
     ports:
       - "4000:4000"
+    environment:
+      - MONGODB_URI=mongodb://db:27017/web3tickets
     depends_on:
-      - db # CAMBIADO: Ahora depende del servicio 'db' (que es mongo)
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    command: npm run dev
+      - db
+
+  # blockchain:
+  #   build: ./blockchain
+  #   container_name: web3tickets_blockchain
+  #   ports:
+  #     - "8545:8545"
 
   frontend:
     build: ./frontend
     container_name: web3tickets_frontend
-    restart: always
-    env_file:
-      - ./frontend/.env
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
+      - NEXT_PUBLIC_LOCAL_CHAIN_ID=31337
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev
+      - blockchain
+
+volumes:
+  mongodb_data:

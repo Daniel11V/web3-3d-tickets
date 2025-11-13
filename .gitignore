@@ -17,6 +17,7 @@ docker-data/
 frontend/.next
 frontend/out
 backend/dist
+backend/db_data
 
 # System
 .DS_Store

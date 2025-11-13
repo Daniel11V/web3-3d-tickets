@@ -1,32 +1,105 @@
+"use client"; // Necesario para el hook de Zustand
+
 import { TEvent } from "@/models/event";
 import { useState, useEffect } from "react";
+import { useStore } from "@/store/useStore"; // 1. Importar Zustand
 
-// --- Props para EventTicket ---
+// --- Props actualizadas ---
 type EventTicketProps = {
-	event: TEvent | undefined; // Puede ser undefined si .find() no encuentra nada
+	event: TEvent | undefined;
 	isExiting: boolean;
+	// Prop para decidir si mostrar el código o el botón de "Adquirir"
+	showAccessCode?: boolean;
+	// El código real a mostrar (ej. tokenId)
+	accessCode?: string;
+	// Callback para el botón de adquirir
+	onAcquireClick?: (eventId: string) => void;
 };
 
 // --- Componente: Ticket del Evento ---
-// La tarjeta 3D que muestra los detalles del ticket.
-export const EventTicket = ({ event, isExiting }: EventTicketProps) => {
+export const EventTicket = ({
+	event,
+	isExiting,
+	showAccessCode = false, // Por defecto, no mostrar el código
+	accessCode,
+	onAcquireClick,
+}: EventTicketProps) => {
+	// 2. Leer estado de conexión
+	const { isConnected } = useStore();
+
 	if (!event) return null;
 
-	// Estado para la animación de entrada inicial (solo la primera vez)
+	// ... (lógica de estado 'hasMounted' sin cambios) ...
 	const [hasMounted, setHasMounted] = useState(false);
 	useEffect(() => {
-		// Usamos un pequeño retraso para asegurar que el estado inicial (opacity-0) se renderice antes de la transición
 		const timer = setTimeout(() => {
 			setHasMounted(true);
 		}, 10);
 		return () => clearTimeout(timer);
 	}, []);
 
-	// El ticket es visible si ha montado Y no está en proceso de "salida"
 	const isVisible = hasMounted && !isExiting;
 
+	const handleAcquire = () => {
+		if (onAcquireClick && event) {
+			onAcquireClick(event.id);
+		}
+	};
+
+	// --- Lógica de renderizado inferior ---
+	const renderTicketBottom = () => {
+		// 3. VISTA: "Mis Tickets"
+		// Si estamos en "Mis Tickets" (showAccessCode=true), mostramos el código
+		if (showAccessCode) {
+			return (
+				<div>
+					<p className="text-xs text-center text-slate-400 mb-2 uppercase">
+						Access Code (Ticket ID)
+					</p>
+					<div
+						className="bg-slate-900 border border-slate-700 rounded-md p-3 text-center
+                       font-mono text-lg text-blue-300 tracking-wider shadow-inner"
+					>
+						{/* Usamos el accessCode (tokenId) pasado como prop */}#{accessCode}
+					</div>
+				</div>
+			);
+		}
+
+		// 4. VISTA: "Eventos" (Logueado)
+		// Si estamos en "Eventos" (showAccessCode=false) Y conectados, mostramos el botón
+		if (isConnected) {
+			return (
+				<button
+					onClick={handleAcquire}
+					className="w-full px-6 py-3 text-lg font-medium text-black bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg 
+								hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg hover:shadow-cyan-500/30
+								focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50"
+				>
+					Acquire Ticket
+				</button>
+			);
+		}
+
+		// 5. VISTA: "Eventos" (Deslogueado)
+		// Si no estamos en "Mis Tickets" Y no estamos conectados,
+		// mostramos el 'code' genérico del evento (como antes).
+		return (
+			<div>
+				<p className="text-xs text-center text-slate-400 mb-2 uppercase">
+					Event Code
+				</p>
+				<div
+					className="bg-slate-900 border border-slate-700 rounded-md p-3 text-center
+                       font-mono text-lg text-blue-300 tracking-wider shadow-inner"
+				>
+					{event.code}
+				</div>
+			</div>
+		);
+	};
+
 	return (
-		// Contenedor de la tarjeta con la transformación 3D y transiciones
 		<div
 			className={`w-72 h-[425px] bg-slate-800 rounded-2xl border-2 border-blue-600 shadow-2xl shadow-blue-800/40
                  flex flex-col items-center justify-between p-6
@@ -39,7 +112,7 @@ export const EventTicket = ({ event, isExiting }: EventTicketProps) => {
                  hover:opacity-100 hover:[transform:rotateY(-5deg)_rotateX(2deg)_scale(1.02)]`}
 			style={{ transformStyle: "preserve-3d" }}
 		>
-			{/* Sección Superior: Logo - Aumentamos su altura a h-2/5 */}
+			{/* Sección Superior: Logo (sin cambios) */}
 			<div className="flex-shrink-0 w-full min-h-40 flex justify-center items-center h-2/5 overflow-hidden">
 				<img
 					src={event.logoUrl}
@@ -52,7 +125,6 @@ export const EventTicket = ({ event, isExiting }: EventTicketProps) => {
 													: "opacity-0 translate-y-4"
 											}`}
 					onError={(e) => {
-						// Fallback en caso de que la imagen falle
 						if ("onerror" in e.target) {
 							e.target.onerror = null;
 						}
@@ -64,7 +136,7 @@ export const EventTicket = ({ event, isExiting }: EventTicketProps) => {
 				/>
 			</div>
 
-			{/* Sección Media: Nombre del Evento */}
+			{/* Sección Media: Nombre del Evento (sin cambios) */}
 			<div className="flex-grow flex flex-col justify-center items-center text-center">
 				<h2 className="text-2xl font-bold text-white tracking-wide">
 					{event.name}
@@ -72,18 +144,8 @@ export const EventTicket = ({ event, isExiting }: EventTicketProps) => {
 				<div className="w-1/3 h-px bg-blue-500 my-4"></div>
 			</div>
 
-			{/* Sección Inferior: Código */}
-			<div className="flex-shrink-0 w-full">
-				<p className="text-xs text-center text-slate-400 mb-2 uppercase">
-					Código de Acceso
-				</p>
-				<div
-					className="bg-slate-900 border border-slate-700 rounded-md p-3 text-center
-                       font-mono text-lg text-blue-300 tracking-wider shadow-inner"
-				>
-					{event.code}
-				</div>
-			</div>
+			{/* Sección Inferior: CONTENIDO DINÁMICO */}
+			<div className="flex-shrink-0 w-full">{renderTicketBottom()}</div>
 		</div>
 	);
 };

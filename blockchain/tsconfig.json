@@ -1,0 +1,19 @@
+{
+	"extends": "@nomicfoundation/hardhat-toolbox/src/tsconfig.json",
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"strict": true,
+		"resolveJsonModule": true,
+		"outDir": "dist"
+	},
+	"include": ["./scripts/**/*.ts"],
+	"files": ["./hardhat.config.ts"],
+
+	"exclude": [
+		"node_modules",
+		"node_modules/config",
+		"node_modules/config/typescript"
+	]
+}
